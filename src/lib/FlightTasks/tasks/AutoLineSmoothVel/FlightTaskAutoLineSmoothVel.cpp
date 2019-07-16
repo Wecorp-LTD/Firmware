@@ -177,6 +177,19 @@ void FlightTaskAutoLineSmoothVel::_checkEkfResetCounters()
 	}
 }
 
+float FlightTaskAutoLineSmoothVel::_getSpeedAtTarget()
+{
+	float speed_at_target = 0.0f;
+
+	if (Vector2f(&(_target - _next_wp)(0)).length() > 0.001f &&
+	    (Vector2f(&(_target - _prev_wp)(0)).length() > _target_acceptance_radius)) {
+		const float alpha = acos(Vector2f(&(_target - _prev_wp)(0)).unit_or_zero() * Vector2f(&(_target - _next_wp)(0)).unit_or_zero()) / 2.f;
+		const float tan_alpha = tan(alpha);
+		speed_at_target = math::min(sqrtf(_param_mpc_acc_hor.get() / 2.f * _target_acceptance_radius * tan_alpha), _mc_cruise_speed);
+	}
+	return speed_at_target;
+}
+
 void FlightTaskAutoLineSmoothVel::_prepareSetpoints()
 {
 	// Interface: A valid position setpoint generates a velocity target using a P controller. If a velocity is specified
@@ -214,7 +227,7 @@ void FlightTaskAutoLineSmoothVel::_prepareSetpoints()
 			float c = - 2.f * _param_mpc_acc_hor.get() * pos_traj_to_dest.length();
 			float max_speed = 0.5f * (-b + sqrtf(b * b - 4.f * c));
 			float speed_sp_track = math::min(max_speed, pos_traj_to_dest.length() * _param_mpc_xy_traj_p.get());
-			speed_sp_track = math::constrain(speed_sp_track, 0.0f, _mc_cruise_speed);
+			speed_sp_track = math::constrain(speed_sp_track, _getSpeedAtTarget(), _mc_cruise_speed);
 
 			Vector2f vel_sp_xy = u_pos_traj_to_dest_xy * speed_sp_track;
 

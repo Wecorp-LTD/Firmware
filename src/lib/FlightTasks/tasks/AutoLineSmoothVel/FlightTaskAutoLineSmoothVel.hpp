@@ -65,6 +65,7 @@ protected:
 				       );
 
 	void checkSetpoints(vehicle_local_position_setpoint_s &setpoints);
+	float _getSpeedAtTarget();
 	void _generateSetpoints() override; /**< Generate setpoints along line. */
 
 	/** determines when to trigger a takeoff (ignored in flight) */
