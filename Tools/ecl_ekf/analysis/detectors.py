@@ -89,6 +89,7 @@ class InAirDetector(object):
                                                 ' and landings.'
 
         in_air = []
+
         for take_off, landing in zip(take_offs, landings):
             if (self._vehicle_land_detected['timestamp'][landing] / 1e6 -
                     self._in_air_margin_seconds) - \
@@ -99,8 +100,24 @@ class InAirDetector(object):
                               self._ulog.start_timestamp) / 1.0e6 + self._in_air_margin_seconds,
                     landing=(self._vehicle_land_detected['timestamp'][landing] -
                              self._ulog.start_timestamp) / 1.0e6 - self._in_air_margin_seconds))
+
         if len(in_air) == 0:
             print('InAirDetector: no airtime detected.')
+            print('Wecorp tweak: force EKF to compute even with no air time.')
+
+            take_offs = [0]
+            landings = [len(self._landed) - 2]
+
+            for take_off, landing in zip(take_offs, landings):
+                if (self._vehicle_land_detected['timestamp'][landing] / 1e6 -
+                        self._in_air_margin_seconds) - \
+                        (self._vehicle_land_detected['timestamp'][take_off] / 1e6 +
+                        self._in_air_margin_seconds) >= self._min_flight_time_seconds:
+                    in_air.append(Airtime(
+                        take_off=(self._vehicle_land_detected['timestamp'][take_off] -
+                                self._ulog.start_timestamp) / 1.0e6 + self._in_air_margin_seconds,
+                        landing=(self._vehicle_land_detected['timestamp'][landing] -
+                                self._ulog.start_timestamp) / 1.0e6 - self._in_air_margin_seconds))
 
         return in_air
 
