@@ -771,6 +771,7 @@ void Ekf2::Run()
 
 		const hrt_abstime now = sensors.timestamp;
 
+		// WECORP: investigate: value to limit is sensors.gyro_rad and sensors.accelerometer_m_s2
 		// push imu data into estimator
 		imuSample imu_sample_new;
 		imu_sample_new.time_us = now;
