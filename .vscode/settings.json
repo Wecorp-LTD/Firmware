@@ -96,5 +96,11 @@
         "workbench.editor.highlightModifiedTabs": true,
         "workbench.enableExperiments": false,
         "workbench.settings.enableNaturalLanguageSearch": false,
-        "workbench.statusBar.feedback.visible": false
+        "workbench.statusBar.feedback.visible": false,
+        "python.pythonPath": "/usr/bin/python",
+        "python.autoComplete.extraPaths": [
+                "/home/samuel/ROS_development/devel/lib/python2.7/dist-packages",
+                "/opt/ros/kinetic/lib/python2.7/dist-packages",
+                "/opt/movidius/caffe/python"
+        ]
 }
