@@ -833,11 +833,19 @@ void Ekf2::run()
 		const hrt_abstime now = sensors.timestamp;
 
 		// WECORP: investigate: value to limit is sensors.gyro_rad and sensors.accelerometer_m_s2
-		const accel_lim = 30.0f; //3G
-		const damping_factor = 100.0f;
+		float accel_lim = 30.0f; //3G
+		float damping_factor = 100.0f;
 
 		if (sensors.accelerometer_m_s2[0] > accel_lim || sensors.accelerometer_m_s2[0] < accel_lim){
 			sensors.accelerometer_m_s2[0] = sensors.accelerometer_m_s2[0] / damping_factor;
+		}
+
+		if (sensors.accelerometer_m_s2[1] > accel_lim || sensors.accelerometer_m_s2[1] < accel_lim){
+			sensors.accelerometer_m_s2[1] = sensors.accelerometer_m_s2[1] / damping_factor;
+		}
+
+		if (sensors.accelerometer_m_s2[2] > accel_lim || sensors.accelerometer_m_s2[2] < accel_lim){
+			sensors.accelerometer_m_s2[2] = sensors.accelerometer_m_s2[2] / damping_factor;
 		}
 
 		// push imu data into estimator
