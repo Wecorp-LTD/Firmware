@@ -771,20 +771,24 @@ void Ekf2::Run()
 
 		const hrt_abstime now = sensors.timestamp;
 
-		// WECORP: investigate: value to limit is sensors.gyro_rad and sensors.accelerometer_m_s2
-		float accel_lim = 30.0f; //3G
-		float damping_factor = 100.0f;
+		// WECORP : artificially dampen the accelerometer when subjected to high vibration.
 
-		if (sensors.accelerometer_m_s2[0] > accel_lim || sensors.accelerometer_m_s2[0] < accel_lim){
+		//METHOD 1: add a damping factor that is triggered should the accelerometer register an acceleration above a set value.
+		// TODO: clean up and add as a function
+		float accel_lim = 20.0f; //2G
+		float damping_factor = 1000.0f;
+		float g = - 9.81f;
+
+		if (sensors.accelerometer_m_s2[0] > accel_lim || sensors.accelerometer_m_s2[0] < - accel_lim){
 			sensors.accelerometer_m_s2[0] = sensors.accelerometer_m_s2[0] / damping_factor;
 		}
 
-		if (sensors.accelerometer_m_s2[1] > accel_lim || sensors.accelerometer_m_s2[1] < accel_lim){
+		if (sensors.accelerometer_m_s2[1] > accel_lim || sensors.accelerometer_m_s2[1] < - accel_lim){
 			sensors.accelerometer_m_s2[1] = sensors.accelerometer_m_s2[1] / damping_factor;
 		}
 
-		if (sensors.accelerometer_m_s2[2] > accel_lim || sensors.accelerometer_m_s2[2] < accel_lim){
-			sensors.accelerometer_m_s2[2] = sensors.accelerometer_m_s2[2] / damping_factor;
+		if (sensors.accelerometer_m_s2[2] > accel_lim + g || sensors.accelerometer_m_s2[2] < - accel_lim + g){
+			sensors.accelerometer_m_s2[2] = sensors.accelerometer_m_s2[2] / damping_factor + g;
 		}
 
 		// push imu data into estimator
