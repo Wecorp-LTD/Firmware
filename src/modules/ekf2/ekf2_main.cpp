@@ -174,6 +174,21 @@ private:
 
 	const bool 	_replay_mode;			///< true when we use replay data from a log
 
+	// WECORP variables declaration
+
+	// to be moved as PX4 PARAMS
+	float _accel_lim = 20.0f; //2G
+	float _damping_factor = 0.1f;
+	float _damping_noise_factor = 0.001f;
+	uint64_t _damping_time = 150; //ms
+
+	// necessary to run the checks
+	float _g = - 9.81201f;
+	bool _damping_check = false;
+	uint64_t _end_damping_t = 0; //us
+        // WECORP, ET: commented as declared const in the new version
+	//bool 	_replay_mode = false;			///< true when we use replay data from a log
+
 	// time slip monitoring
 	uint64_t _integrated_time_us = 0;	///< integral of gyro delta time from start (uSec)
 	uint64_t _start_time_us = 0;		///< system time at EKF start (uSec)
@@ -775,20 +790,40 @@ void Ekf2::Run()
 
 		//METHOD 1: add a damping factor that is triggered should the accelerometer register an acceleration above a set value.
 		// TODO: clean up and add as a function
-		float accel_lim = 20.0f; //2G
-		float damping_factor = 1000.0f;
-		float g = - 9.81f;
+		// float accel_lim = 20.0f; //2G
+		// float damping_factor = 1000.0f;
+		// float g = - 9.81f;
 
-		if (sensors.accelerometer_m_s2[0] > accel_lim || sensors.accelerometer_m_s2[0] < - accel_lim){
-			sensors.accelerometer_m_s2[0] = sensors.accelerometer_m_s2[0] / damping_factor;
+		// if (sensors.accelerometer_m_s2[0] > accel_lim || sensors.accelerometer_m_s2[0] < - accel_lim){
+		// 	sensors.accelerometer_m_s2[0] = sensors.accelerometer_m_s2[0] / damping_factor;
+		// }
+
+		// if (sensors.accelerometer_m_s2[1] > accel_lim || sensors.accelerometer_m_s2[1] < - accel_lim){
+		// 	sensors.accelerometer_m_s2[1] = sensors.accelerometer_m_s2[1] / damping_factor;
+		// }
+
+		// if (sensors.accelerometer_m_s2[2] > accel_lim + g || sensors.accelerometer_m_s2[2] < - accel_lim + g){
+		// 	sensors.accelerometer_m_s2[2] = sensors.accelerometer_m_s2[2] / damping_factor + g;
+		//}
+
+		//METHOD 2: dampen all accelerometers inputs for a set time should the accelerometer register an acceleration above a set value.
+
+		// Detects the first accelerometer excitation in any directions, identifies the timestamp at which damping will stop
+		if (fabsf(sensors.accelerometer_m_s2[0]) > _accel_lim || fabsf(sensors.accelerometer_m_s2[1]) > _accel_lim || fabsf(sensors.accelerometer_m_s2[2]) > _accel_lim && !_damping_check){
+			_end_damping_t = now + _damping_time * 1000;
+			_damping_check = true;
 		}
 
-		if (sensors.accelerometer_m_s2[1] > accel_lim || sensors.accelerometer_m_s2[1] < - accel_lim){
-			sensors.accelerometer_m_s2[1] = sensors.accelerometer_m_s2[1] / damping_factor;
+		// Stops the damping once the desired timestamp is reached
+		if (now > _end_damping_t && _damping_check){
+			_damping_check = false;
 		}
 
-		if (sensors.accelerometer_m_s2[2] > accel_lim + g || sensors.accelerometer_m_s2[2] < - accel_lim + g){
-			sensors.accelerometer_m_s2[2] = sensors.accelerometer_m_s2[2] / damping_factor + g;
+		// normalises and dampens the accelerometers while the damping is activated
+		if (_damping_check){
+			sensors.accelerometer_m_s2[0] = (sensors.accelerometer_m_s2[0]) * (_damping_factor / fabsf(sensors.accelerometer_m_s2[0]) + _damping_noise_factor);
+			sensors.accelerometer_m_s2[1] = (sensors.accelerometer_m_s2[1]) * (_damping_factor / fabsf(sensors.accelerometer_m_s2[1]) + _damping_noise_factor);
+			sensors.accelerometer_m_s2[2] = (sensors.accelerometer_m_s2[2] - _g) * (_damping_factor / fabsf(sensors.accelerometer_m_s2[2]) + _damping_noise_factor) + _g;
 		}
 
 		// push imu data into estimator
