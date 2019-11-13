@@ -169,7 +169,7 @@ private:
 
 	// to be moved as PX4 PARAMS
 	float _accel_lim = 20.0f; //2G
-	float _damping_factor = 0.1f;
+	float _damping_factor = 0.01f;
 	float _damping_noise_factor = 0.001f;
 	uint64_t _damping_time = 150; //ms
 
