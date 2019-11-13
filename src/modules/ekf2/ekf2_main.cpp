@@ -809,7 +809,7 @@ void Ekf2::Run()
 		//METHOD 2: dampen all accelerometers inputs for a set time should the accelerometer register an acceleration above a set value.
 
 		// Detects the first accelerometer excitation in any directions, identifies the timestamp at which damping will stop
-		if (fabsf(sensors.accelerometer_m_s2[0]) > _accel_lim || fabsf(sensors.accelerometer_m_s2[1]) > _accel_lim || fabsf(sensors.accelerometer_m_s2[2]) > _accel_lim){
+		if (fabsf(sensors.accelerometer_m_s2[0]) > _accel_lim || fabsf(sensors.accelerometer_m_s2[1]) > _accel_lim || fabsf(sensors.accelerometer_m_s2[2] - _g) > _accel_lim){
 			if (!_damping_check){
 				_end_damping_t = now + _damping_time * 1000;
 				_damping_check = true;
