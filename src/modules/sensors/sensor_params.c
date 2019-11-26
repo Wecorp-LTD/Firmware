@@ -236,3 +236,77 @@ PARAM_DEFINE_FLOAT(IMU_GYRO_CUTOFF, 30.0f);
 * @group Sensors
 */
 PARAM_DEFINE_FLOAT(IMU_ACCEL_CUTOFF, 30.0f);
+
+/**
+* Sensor level cutoff value to start damping IMU outputs
+*
+* yada yada yada
+*
+* @min 20
+* @max 1000
+* @unit m/s^2
+* @reboot_required true
+* @group Sensors
+*/
+PARAM_DEFINE_FLOAT(IMU_ACCEL_LIM, 50.0f);
+
+/**
+* Value to scale down accel value to if damping is triggered
+*
+* yada yada yada
+*
+* @min 0
+* @max 0.1
+* @reboot_required true
+* @group Sensors
+*/
+PARAM_DEFINE_FLOAT(IMU_ACCEL_DAMPING, 0.01f);
+
+/**
+* Noise parameter to add to scaled down accel value if damping is triggered
+*
+* yada yada yada
+*
+* @min 0
+* @max 0.1
+* @reboot_required true
+* @group Sensors
+*/
+PARAM_DEFINE_FLOAT(IMU_ACCEL_DAMPING_NOISE, 0.01f);
+
+/**
+* Value to scale down gyro value to if damping is triggered
+*
+* yada yada yada
+*
+* @min 0
+* @max 0.1
+* @reboot_required true
+* @group Sensors
+*/
+PARAM_DEFINE_FLOAT(IMU_GYRO_DAMPING, 0.08f);
+
+/**
+* Noise parameter to add to scaled down gyro value if damping is triggered
+*
+* yada yada yada
+*
+* @min 0
+* @max 0.1
+* @reboot_required true
+* @group Sensors
+*/
+PARAM_DEFINE_FLOAT(IMU_GYRO_DAMPING_NOISE, 0.001f);
+
+/**
+* Noise parameter to add to scaled down accel value if damping is triggered
+*
+* yada yada yada
+*
+* @min 0
+* @max 250
+* @unit ms
+* @reboot_required true
+* @group Sensors
+*/
+PARAM_DEFINE_FLOAT(IMU_DAMPING_TIME, 120.0f);
