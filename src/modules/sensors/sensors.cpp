@@ -694,6 +694,7 @@ Sensors::run()
 			// TODO:
 			// - add _parameters to file
 			// - replace now variable by timestamp: OK
+			// - have logging for undamped accel and gyro values
 
 			//METHOD: dampen all accelerometer and gyroscope inputs for a set time should the accelerometer register an acceleration above a set value.
 
