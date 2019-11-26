@@ -446,6 +446,23 @@ Sensors::run()
 
 	uint64_t last_config_update = hrt_absolute_time();
 
+	// WECORP variables declaration
+
+	// to be moved as PX4 PARAMS
+	float _accel_lim = 20.0f; //2G
+	float _accel_damping_factor = 0.01f;
+	float _accel_damping_noise_factor = 0.001f;
+
+	float _gyro_damping_factor = 0.08f;
+	float _gyro_damping_noise_factor = 0.001f;
+
+	uint64_t _damping_time = 150; //ms
+
+	// necessary to run the checks
+	float _g = - 9.81201f;
+	bool _damping_check = false;
+	uint64_t _end_damping_t = 0; //us
+
 	while (!should_exit()) {
 
 		/* use the best-voted gyro to pace output */
@@ -496,7 +513,49 @@ Sensors::run()
 
 			_voted_sensors_update.setRelativeTimestamps(raw);
 
-			_sensor_pub.publish(raw);
+                        //WECORP, ET: double check if orb_publish_auto function includes also this publish
+			//_sensor_pub.publish(raw);
+
+			// WECORP : artificially dampen the accelerometer and gyroscope when subjected to high vibration.
+
+			// here to modify the accel and gyro values (raw variable.)
+			// according to voted_sensors_update.cpp, variables should be
+			// acccel: raw.accelerometer_m_s2[x] where x =0,1,2
+			// gyro: raw.gyro_rad[x] where x =0,1,2
+
+			// TODO:
+			// - add _parameters to file
+			// - replace now variable by timestamp: OK
+
+			//METHOD: dampen all accelerometer and gyroscope inputs for a set time should the accelerometer register an acceleration above a set value.
+
+			const hrt_abstime now = raw.timestamp;
+			// Detects the first accelerometer excitation in any directions, identifies the timestamp at which damping will stop
+			if (fabsf(raw.accelerometer_m_s2[0]) > _accel_lim || fabsf(raw.accelerometer_m_s2[1]) > _accel_lim || fabsf(raw.accelerometer_m_s2[2] - _g) > _accel_lim){
+				if (!_damping_check){
+					_end_damping_t = now + _damping_time * 1000;
+					_damping_check = true;
+				}
+			}
+
+			// Stops the damping once the desired timestamp is reached
+			if (now > _end_damping_t && _damping_check){
+				_damping_check = false;
+			}
+
+			// normalises and dampens the accelerometer and gyro while the damping is activated
+			if (_damping_check){
+				raw.accelerometer_m_s2[0] = (raw.accelerometer_m_s2[0]) * (_accel_damping_factor / fabsf(raw.accelerometer_m_s2[0]) + _accel_damping_noise_factor);
+				raw.accelerometer_m_s2[1] = (raw.accelerometer_m_s2[1]) * (_accel_damping_factor / fabsf(raw.accelerometer_m_s2[1]) + _accel_damping_noise_factor);
+				raw.accelerometer_m_s2[2] = (raw.accelerometer_m_s2[2] - _g) * (_accel_damping_factor / fabsf(raw.accelerometer_m_s2[2]) + _accel_damping_noise_factor) + _g;
+
+				raw.gyro_rad[0] = (raw.gyro_rad[0]) * (_gyro_damping_factor / fabsf(raw.gyro_rad[0]) + _gyro_damping_noise_factor);
+				raw.gyro_rad[1] = (raw.gyro_rad[1]) * (_gyro_damping_factor / fabsf(raw.gyro_rad[1]) + _gyro_damping_noise_factor);
+				raw.gyro_rad[2] = (raw.gyro_rad[2]) * (_gyro_damping_factor / fabsf(raw.gyro_rad[2]) + _gyro_damping_noise_factor);
+			}
+
+			int instance;
+			orb_publish_auto(ORB_ID(sensor_combined), &_sensor_pub, &raw, &instance, ORB_PRIO_DEFAULT);
 
 			if (airdata.timestamp != airdata_prev_timestamp) {
 				_airdata_pub.publish(airdata);
