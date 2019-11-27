@@ -90,6 +90,7 @@ PARAM_DEFINE_INT32(SDLOG_MODE, 0);
 PARAM_DEFINE_INT32(SDLOG_MISSION, 0);
 
 /**
+ * // WECORP: added wecorp params
  * Logging topic profile (integer bitmask).
  *
  * This integer bitmask controls the set and rates of logged topics.
@@ -108,6 +109,7 @@ PARAM_DEFINE_INT32(SDLOG_MISSION, 0);
  * 5 : Debugging topics (debug_*.msg topics, for custom code)
  * 6 : Topics for sensor comparison (low rate raw IMU, Baro and Magnetomer data)
  * 7 : Topics for computer vision and collision avoidance
+ * 8 : Proprietary Wecorp topics (undamped IMU)
  *
  * @min 0
  * @max 255
@@ -119,6 +121,7 @@ PARAM_DEFINE_INT32(SDLOG_MISSION, 0);
  * @bit 5 Debug
  * @bit 6 Sensor comparison
  * @bit 7 Computer Vision and Avoidance
+ * @bit 8 Wecorp
  * @reboot_required true
  * @group SD Logging
  */
