@@ -621,7 +621,7 @@ Sensors::run()
 
 	uint64_t last_config_update = hrt_absolute_time();
 
-	// WECORP variables declaration
+	//WECORP: variables declaration
 
 	param_t _accel_lim = param_find("IMU_ACCEL_LIM");
 	param_t _accel_damping_factor = param_find("IMU_ACCEL_DMP");
@@ -681,15 +681,15 @@ Sensors::run()
 
 			_voted_sensors_update.set_relative_timestamps(raw);
 
-			// WECORP : artificially dampen the accelerometer and gyroscope when subjected to high vibration.
+			//WECORP: artificially dampen the accelerometer and gyroscope when subjected to high vibration.
 
 			// here to modify the accel and gyro values (raw variable.)
-			// according to voted_sensors_update.cpp, variables should be
-			// acccel: raw.accelerometer_m_s2[x] where x =0,1,2
+			// variables to modifiy are
+			// accel: raw.accelerometer_m_s2[x] where x =0,1,2
 			// gyro: raw.gyro_rad[x] where x =0,1,2
 
 			// TODO:
-			// - add _parameters to file
+			// - add _parameters to file : OK
 			// - replace now variable by timestamp: OK
 			// - have logging for undamped accel and gyro values
 
