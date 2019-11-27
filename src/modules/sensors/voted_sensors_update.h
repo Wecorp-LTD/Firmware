@@ -55,6 +55,8 @@
 #include <uORB/Publication.hpp>
 #include <uORB/PublicationQueued.hpp>
 #include <uORB/topics/sensor_combined.h>
+//WECORP:
+#include <uORB/topics/sensor_combined_undamped.h>
 #include <uORB/topics/sensor_preflight.h>
 #include <uORB/topics/sensor_correction.h>
 #include <uORB/topics/sensor_selection.h>
