@@ -329,6 +329,7 @@ private:
 	 */
 	void initialize_configured_topics();
 
+	//WECORP: added wecorp_topic function in class.
 	void add_default_topics();
 	void add_estimator_replay_topics();
 	void add_thermal_calibration_topics();
@@ -337,6 +338,7 @@ private:
 	void add_debug_topics();
 	void add_sensor_comparison_topics();
 	void add_vision_and_avoidance_topics();
+	void add_wecorp_topics();
 
 	/**
 	 * check current arming state and start/stop logging if state changed and according to configured params.
