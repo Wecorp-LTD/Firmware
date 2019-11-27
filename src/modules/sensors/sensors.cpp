@@ -695,6 +695,10 @@ Sensors::run()
 
 			//METHOD: dampen all accelerometer and gyroscope inputs for a set time should the accelerometer register an acceleration above a set value.
 
+			// First publish undamped sensor data to custom topic
+			int instance;
+			orb_publish_auto(ORB_ID(sensor_combined_undamped), &_sensor_pub, &raw, &instance, ORB_PRIO_DEFAULT);
+
 			const hrt_abstime now = raw.timestamp;
 			// Detects the first accelerometer excitation in any directions, identifies the timestamp at which damping will stop
 			if (fabsf(raw.accelerometer_m_s2[0]) > _accel_lim || fabsf(raw.accelerometer_m_s2[1]) > _accel_lim || fabsf(raw.accelerometer_m_s2[2] - _g) > _accel_lim){
@@ -720,7 +724,6 @@ Sensors::run()
 				raw.gyro_rad[2] = (raw.gyro_rad[2]) * (_gyro_damping_factor / fabsf(raw.gyro_rad[2]) + _gyro_damping_noise_factor);
 			}
 
-			int instance;
 			orb_publish_auto(ORB_ID(sensor_combined), &_sensor_pub, &raw, &instance, ORB_PRIO_DEFAULT);
 
 			if (airdata.timestamp != airdata_prev_timestamp) {
