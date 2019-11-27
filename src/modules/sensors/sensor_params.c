@@ -260,7 +260,7 @@ PARAM_DEFINE_FLOAT(IMU_ACCEL_LIM, 50.0f);
 * @reboot_required true
 * @group Sensors
 */
-PARAM_DEFINE_FLOAT(IMU_ACCEL_DAMPING, 0.01f);
+PARAM_DEFINE_FLOAT(IMU_ACCEL_DMP, 0.01f);
 
 /**
 * Noise parameter to add to scaled down accel value if damping is triggered
@@ -272,7 +272,7 @@ PARAM_DEFINE_FLOAT(IMU_ACCEL_DAMPING, 0.01f);
 * @reboot_required true
 * @group Sensors
 */
-PARAM_DEFINE_FLOAT(IMU_ACCEL_DAMPING_NOISE, 0.01f);
+PARAM_DEFINE_FLOAT(IMU_ACCEL_DMP_N, 0.01f);
 
 /**
 * Value to scale down gyro value to if damping is triggered
@@ -284,7 +284,7 @@ PARAM_DEFINE_FLOAT(IMU_ACCEL_DAMPING_NOISE, 0.01f);
 * @reboot_required true
 * @group Sensors
 */
-PARAM_DEFINE_FLOAT(IMU_GYRO_DAMPING, 0.08f);
+PARAM_DEFINE_FLOAT(IMU_GYRO_DMP, 0.08f);
 
 /**
 * Noise parameter to add to scaled down gyro value if damping is triggered
@@ -296,7 +296,7 @@ PARAM_DEFINE_FLOAT(IMU_GYRO_DAMPING, 0.08f);
 * @reboot_required true
 * @group Sensors
 */
-PARAM_DEFINE_FLOAT(IMU_GYRO_DAMPING_NOISE, 0.001f);
+PARAM_DEFINE_FLOAT(IMU_GYRO_DMP_N, 0.001f);
 
 /**
 * Noise parameter to add to scaled down accel value if damping is triggered
@@ -309,4 +309,4 @@ PARAM_DEFINE_FLOAT(IMU_GYRO_DAMPING_NOISE, 0.001f);
 * @reboot_required true
 * @group Sensors
 */
-PARAM_DEFINE_FLOAT(IMU_DAMPING_TIME, 120.0f);
+PARAM_DEFINE_FLOAT(IMU_DMP_T, 120.0f);

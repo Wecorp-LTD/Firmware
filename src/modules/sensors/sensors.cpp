@@ -623,15 +623,12 @@ Sensors::run()
 
 	// WECORP variables declaration
 
-	// to be moved as PX4 PARAMS
-	float _accel_lim = 20.0f; //2G
-	float _accel_damping_factor = 0.01f;
-	float _accel_damping_noise_factor = 0.001f;
-
-	float _gyro_damping_factor = 0.08f;
-	float _gyro_damping_noise_factor = 0.001f;
-
-	uint64_t _damping_time = 150; //ms
+	param_t _accel_lim = param_find("IMU_ACCEL_LIM");
+	param_t _accel_damping_factor = param_find("IMU_ACCEL_DMP");
+	param_t _accel_damping_noise_factor = param_find("IMU_ACCEL_DMP_N");
+	param_t _gyro_damping_factor = param_find("IMU_GYRO_DMP");
+	param_t _gyro_damping_noise_factor = param_find("IMU_GYRO_DMP_N");
+	param_t _damping_time = param_find("IMU_DMP_T");; //ms
 
 	// necessary to run the checks
 	float _g = - 9.81201f;
