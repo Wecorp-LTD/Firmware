@@ -279,7 +279,7 @@ rtps:
     id: 134
   - msg: vehicle_trajectory_waypoint_desired
     id: 135
-  #WECORP:
+  #WECORP: added sensor_combined_undamped msg for rtps
   - msg: sensor_combined_undamped
     id: 999
 

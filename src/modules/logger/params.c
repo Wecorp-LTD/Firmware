@@ -111,7 +111,7 @@ PARAM_DEFINE_INT32(SDLOG_MISSION, 0);
  * 8 : Proprietary Wecorp topics (undamped IMU)
  *
  * @min 0
- * @max 256
+ * @max 511
  * @bit 0 Default set (general log analysis)
  * @bit 1 Estimator replay (EKF2)
  * @bit 2 Thermal calibration

@@ -168,6 +168,8 @@ private:
 	int		_vcontrol_mode_sub{-1};		/**< vehicle control mode subscription */
 	int 		_params_sub{-1};			/**< notification of parameter updates */
 
+	// WECORP: added sensor_undamped pub
+	orb_advert_t	_sensor_undamped_pub{nullptr};			/**< combined sensor data topic */
 	orb_advert_t	_sensor_pub{nullptr};			/**< combined sensor data topic */
 	orb_advert_t	_airdata_pub{nullptr};			/**< combined sensor data topic */
 	orb_advert_t	_magnetometer_pub{nullptr};			/**< combined sensor data topic */
@@ -697,7 +699,7 @@ Sensors::run()
 
 			// First publish undamped sensor data to custom topic
 			int instance;
-			orb_publish_auto(ORB_ID(sensor_combined_undamped), &_sensor_pub, &raw, &instance, ORB_PRIO_DEFAULT);
+			orb_publish_auto(ORB_ID(sensor_combined_undamped), &_sensor_undamped_pub, &raw, &instance, ORB_PRIO_DEFAULT);
 
 			const hrt_abstime now = raw.timestamp;
 			// Detects the first accelerometer excitation in any directions, identifies the timestamp at which damping will stop
@@ -777,6 +779,11 @@ Sensors::run()
 
 	if (_sensor_pub) {
 		orb_unadvertise(_sensor_pub);
+	}
+
+	//WECORP: close uOrb pub
+	if (_sensor_undamped_pub) {
+		orb_unadvertise(_sensor_undamped_pub);
 	}
 
 	if (_airdata_pub) {

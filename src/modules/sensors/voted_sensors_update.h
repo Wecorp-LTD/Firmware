@@ -53,7 +53,7 @@
 #include <lib/ecl/validation/data_validator_group.h>
 
 #include <uORB/topics/sensor_combined.h>
-//WECORP:
+//WECORP: added sensor_combined_undamped msg
 #include <uORB/topics/sensor_combined_undamped.h>
 #include <uORB/topics/sensor_preflight.h>
 #include <uORB/topics/sensor_correction.h>

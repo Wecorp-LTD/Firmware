@@ -749,12 +749,12 @@ void Logger::add_system_identification_topics()
 	add_topic("sensor_combined");
 }
 
-//WECORP:
+//WECORP: add wecorp log topic
 // TODO: change sensor combined to correct UORB topic name
 void Logger::add_wecorp_topics()
 {
 	// maximum rate to analyze fast maneuvers (e.g. for racing)
-	add_topic("sensor_combined");
+	add_topic("sensor_combined_undamped");
 }
 
 int Logger::add_topics_from_file(const char *fname)
