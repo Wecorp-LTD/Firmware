@@ -165,23 +165,6 @@ private:
 	 */
 	float filter_altitude_ellipsoid(float amsl_hgt);
 
-	// WECORP variables declaration
-
-	// to be moved as PX4 PARAMS
-	float _accel_lim = 20.0f; //2G
-	float _accel_damping_factor = 0.01f;
-	float _accel_damping_noise_factor = 0.001f;
-
-	float _gyro_damping_factor = 0.08f;
-	float _gyro_damping_noise_factor = 0.001f;
-
-	uint64_t _damping_time = 150; //ms
-
-	// necessary to run the checks
-	float _g = - 9.81201f;
-	bool _damping_check = false;
-	uint64_t _end_damping_t = 0; //us
-
 	bool 	_replay_mode = false;			///< true when we use replay data from a log
 
 	// time slip monitoring
@@ -848,34 +831,6 @@ void Ekf2::run()
 		}
 
 		const hrt_abstime now = sensors.timestamp;
-
-		// WECORP : artificially dampen the accelerometer and gyroscope when subjected to high vibration.
-
-		//METHOD: dampen all accelerometer and gyroscope inputs for a set time should the accelerometer register an acceleration above a set value.
-
-		// Detects the first accelerometer excitation in any directions, identifies the timestamp at which damping will stop
-		if (fabsf(sensors.accelerometer_m_s2[0]) > _accel_lim || fabsf(sensors.accelerometer_m_s2[1]) > _accel_lim || fabsf(sensors.accelerometer_m_s2[2] - _g) > _accel_lim){
-			if (!_damping_check){
-				_end_damping_t = now + _damping_time * 1000;
-				_damping_check = true;
-			}
-		}
-
-		// Stops the damping once the desired timestamp is reached
-		if (now > _end_damping_t && _damping_check){
-			_damping_check = false;
-		}
-
-		// normalises and dampens the accelerometer and gyro while the damping is activated
-		if (_damping_check){
-			sensors.accelerometer_m_s2[0] = (sensors.accelerometer_m_s2[0]) * (_accel_damping_factor / fabsf(sensors.accelerometer_m_s2[0]) + _accel_damping_noise_factor);
-			sensors.accelerometer_m_s2[1] = (sensors.accelerometer_m_s2[1]) * (_accel_damping_factor / fabsf(sensors.accelerometer_m_s2[1]) + _accel_damping_noise_factor);
-			sensors.accelerometer_m_s2[2] = (sensors.accelerometer_m_s2[2] - _g) * (_accel_damping_factor / fabsf(sensors.accelerometer_m_s2[2]) + _accel_damping_noise_factor) + _g;
-
-			sensors.gyro_rad[0] = (sensors.gyro_rad[0]) * (_gyro_damping_factor / fabsf(sensors.gyro_rad[0]) + _gyro_damping_noise_factor);
-			sensors.gyro_rad[1] = (sensors.gyro_rad[1]) * (_gyro_damping_factor / fabsf(sensors.gyro_rad[1]) + _gyro_damping_noise_factor);
-			sensors.gyro_rad[2] = (sensors.gyro_rad[2]) * (_gyro_damping_factor / fabsf(sensors.gyro_rad[2]) + _gyro_damping_noise_factor);
-		}
 
 		// push imu data into estimator
 		imuSample imu_sample_new;
