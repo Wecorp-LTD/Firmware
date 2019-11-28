@@ -326,3 +326,7 @@ rtps:
     id: 169
     alias: vehicle_odometry
   ########## multi topics: end ##########
+    id: 135
+  #WECORP:
+  - msg: sensor_combined_undamped
+    id: 999

@@ -31,6 +31,7 @@
 #
 ############################################################################
 
+#WECORP: add new .msg files here
 set(msg_files
 	actuator_armed.msg
 	actuator_controls.msg
@@ -103,6 +104,7 @@ set(msg_files
 	sensor_baro.msg
 	sensor_bias.msg
 	sensor_combined.msg
+	sensor_combined_undamped.msg
 	sensor_correction.msg
 	sensor_gyro.msg
 	sensor_gyro_control.msg
