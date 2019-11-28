@@ -61,8 +61,7 @@ namespace px4
 namespace logger
 {
 
-// WECORP:
-// added option for wecorp topics
+// WECORP: added option for wecorp topics
 enum class SDLogProfileMask : int32_t {
 	DEFAULT =               1 << 0,
 	ESTIMATOR_REPLAY =      1 << 1,

@@ -143,6 +143,17 @@ private:
 	uORB::Subscription	_diff_pres_sub{ORB_ID(differential_pressure)};			/**< raw differential pressure subscription */
 	uORB::Subscription	_parameter_update_sub{ORB_ID(parameter_update)};				/**< notification of parameter updates */
 	uORB::Subscription	_vcontrol_mode_sub{ORB_ID(vehicle_control_mode)};		/**< vehicle control mode subscription */
+        // WECORP, ET: commented because appear redefined up
+	//int		_actuator_ctrl_0_sub{-1};		/**< attitude controls sub */
+	//int		_diff_pres_sub{-1};			/**< raw differential pressure subscription */
+	//int		_vcontrol_mode_sub{-1};		/**< vehicle control mode subscription */
+	//int 		_params_sub{-1};			/**< notification of parameter updates */
+
+	// WECORP: added sensor_undamped pub
+	orb_advert_t	_sensor_undamped_pub{nullptr};			/**< combined sensor data topic */
+	orb_advert_t	_sensor_pub{nullptr};			/**< combined sensor data topic */
+	orb_advert_t	_airdata_pub{nullptr};			/**< combined sensor data topic */
+	orb_advert_t	_magnetometer_pub{nullptr};			/**< combined sensor data topic */
 
 	uORB::Publication<airspeed_s>			_airspeed_pub{ORB_ID(airspeed)};			/**< airspeed */
 	uORB::Publication<sensor_combined_s>		_sensor_pub{ORB_ID(sensor_combined)};			/**< combined sensor data topic */
@@ -529,7 +540,7 @@ Sensors::run()
 
 			// First publish undamped sensor data to custom topic
 			int instance;
-			orb_publish_auto(ORB_ID(sensor_combined_undamped), &_sensor_pub, &raw, &instance, ORB_PRIO_DEFAULT);
+			orb_publish_auto(ORB_ID(sensor_combined_undamped), &_sensor_undamped_pub, &raw, &instance, ORB_PRIO_DEFAULT);
 
 			const hrt_abstime now = raw.timestamp;
 			// Detects the first accelerometer excitation in any directions, identifies the timestamp at which damping will stop
@@ -603,6 +614,32 @@ Sensors::run()
 		perf_end(_loop_perf);
 	}
 
+<<<<<<< b1fe9fa440f7e0ad75cba2f9e9e1c999647b5b0f
+=======
+	orb_unsubscribe(_diff_pres_sub);
+	orb_unsubscribe(_vcontrol_mode_sub);
+	orb_unsubscribe(_params_sub);
+	orb_unsubscribe(_actuator_ctrl_0_sub);
+
+	if (_sensor_pub) {
+		orb_unadvertise(_sensor_pub);
+	}
+
+	//WECORP: close uOrb pub
+	if (_sensor_undamped_pub) {
+		orb_unadvertise(_sensor_undamped_pub);
+	}
+
+	if (_airdata_pub) {
+		orb_unadvertise(_airdata_pub);
+	}
+
+	if (_magnetometer_pub) {
+		orb_unadvertise(_magnetometer_pub);
+	}
+
+	_rc_update.deinit();
+>>>>>>> feat: fixed up the bitmask for logging. cleaned up comments
 	_voted_sensors_update.deinit();
 }
 
