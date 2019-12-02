@@ -459,15 +459,16 @@ Sensors::run()
 
 	//WECORP: variables declaration
 	// bug: params are not triggering logic. to investigate
+	// may be because all params are set to 0 as they are not found. to test tomorrow (try debugging tool?)
 
 	// param_t _accel_lim = param_find("IMU_ACCEL_LIM");
 	// param_t _accel_damping_factor = param_find("IMU_ACCEL_DMP");
 	// param_t _accel_damping_noise_factor = param_find("IMU_ACCEL_DMP_N");
 	// param_t _gyro_damping_factor = param_find("IMU_GYRO_DMP");
 	// param_t _gyro_damping_noise_factor = param_find("IMU_GYRO_DMP_N");
-	// param_t _damping_time = param_find("IMU_DMP_T");; //ms
+	// param_t _damping_time = param_find("IMU_DMP_T"); //ms
 
-	float _accel_lim = 20.0f; //2G
+	float _accel_lim = 40.0f; //4G
 	float _accel_damping_factor = 0.01f;
 	float _accel_damping_noise_factor = 0.001f;
 	float _gyro_damping_factor = 0.08f;
