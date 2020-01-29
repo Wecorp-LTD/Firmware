@@ -57,6 +57,7 @@ namespace px4
 namespace logger
 {
 
+// WECORP: added option for wecorp topics
 enum class SDLogProfileMask : int32_t {
 	DEFAULT =               1 << 0,
 	ESTIMATOR_REPLAY =      1 << 1,
@@ -65,7 +66,8 @@ enum class SDLogProfileMask : int32_t {
 	HIGH_RATE =             1 << 4,
 	DEBUG_TOPICS =          1 << 5,
 	SENSOR_COMPARISON =     1 << 6,
-	VISION_AND_AVOIDANCE =  1 << 7
+	VISION_AND_AVOIDANCE =  1 << 7,
+	WECORP_TOPICS =		1 << 8,
 };
 
 enum class MissionLogType : int32_t {
@@ -326,6 +328,7 @@ private:
 	 */
 	void initialize_configured_topics();
 
+	//WECORP: added wecorp_topic function in class.
 	void add_default_topics();
 	void add_estimator_replay_topics();
 	void add_thermal_calibration_topics();
@@ -334,6 +337,7 @@ private:
 	void add_debug_topics();
 	void add_sensor_comparison_topics();
 	void add_vision_and_avoidance_topics();
+	void add_wecorp_topics();
 
 	/**
 	 * check current arming state and start/stop logging if state changed and according to configured params.

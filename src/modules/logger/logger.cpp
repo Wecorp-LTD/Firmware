@@ -749,6 +749,13 @@ void Logger::add_system_identification_topics()
 	add_topic("sensor_combined");
 }
 
+//WECORP: add wecorp log topic
+void Logger::add_wecorp_topics()
+{
+	// maximum rate to analyze fast maneuvers (e.g. for racing)
+	add_topic("sensor_combined_undamped");
+}
+
 int Logger::add_topics_from_file(const char *fname)
 {
 	FILE		*fp;
@@ -831,6 +838,8 @@ void Logger::initialize_mission_topics(MissionLogType type)
 
 void Logger::initialize_configured_topics()
 {
+	// WECORP: add custom logging profile here
+
 	// get the logging profile
 	SDLogProfileMask sdlog_profile = SDLogProfileMask::DEFAULT;
 
@@ -874,6 +883,10 @@ void Logger::initialize_configured_topics()
 
 	if (sdlog_profile & SDLogProfileMask::VISION_AND_AVOIDANCE) {
 		add_vision_and_avoidance_topics();
+	}
+
+	if (sdlog_profile & SDLogProfileMask::WECORP_TOPICS) {
+		add_wecorp_topics();
 	}
 }
 

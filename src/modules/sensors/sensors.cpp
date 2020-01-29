@@ -168,6 +168,8 @@ private:
 	int		_vcontrol_mode_sub{-1};		/**< vehicle control mode subscription */
 	int 		_params_sub{-1};			/**< notification of parameter updates */
 
+	// WECORP: added sensor_undamped pub
+	orb_advert_t	_sensor_undamped_pub{nullptr};			/**< combined sensor data topic */
 	orb_advert_t	_sensor_pub{nullptr};			/**< combined sensor data topic */
 	orb_advert_t	_airdata_pub{nullptr};			/**< combined sensor data topic */
 	orb_advert_t	_magnetometer_pub{nullptr};			/**< combined sensor data topic */
@@ -621,17 +623,23 @@ Sensors::run()
 
 	uint64_t last_config_update = hrt_absolute_time();
 
-	// WECORP variables declaration
+	//WECORP: variables declaration
+	// bug: params are not triggering logic. to investigate
+	// may be because all params are set to 0 as they are not found. to test tomorrow (try debugging tool?)
 
-	// to be moved as PX4 PARAMS
-	float _accel_lim = 20.0f; //2G
+	// param_t _accel_lim = param_find("IMU_ACCEL_LIM");
+	// param_t _accel_damping_factor = param_find("IMU_ACCEL_DMP");
+	// param_t _accel_damping_noise_factor = param_find("IMU_ACCEL_DMP_N");
+	// param_t _gyro_damping_factor = param_find("IMU_GYRO_DMP");
+	// param_t _gyro_damping_noise_factor = param_find("IMU_GYRO_DMP_N");
+	// param_t _damping_time = param_find("IMU_DMP_T"); //ms
+
+	float _accel_lim = 40.0f; //4G
 	float _accel_damping_factor = 0.01f;
 	float _accel_damping_noise_factor = 0.001f;
-
 	float _gyro_damping_factor = 0.08f;
 	float _gyro_damping_noise_factor = 0.001f;
-
-	uint64_t _damping_time = 150; //ms
+	uint64_t _damping_time = 120; //ms
 
 	// necessary to run the checks
 	float _g = - 9.81201f;
@@ -684,18 +692,23 @@ Sensors::run()
 
 			_voted_sensors_update.set_relative_timestamps(raw);
 
-			// WECORP : artificially dampen the accelerometer and gyroscope when subjected to high vibration.
+			//WECORP: artificially dampen the accelerometer and gyroscope when subjected to high vibration.
 
 			// here to modify the accel and gyro values (raw variable.)
-			// according to voted_sensors_update.cpp, variables should be
-			// acccel: raw.accelerometer_m_s2[x] where x =0,1,2
+			// variables to modifiy are
+			// accel: raw.accelerometer_m_s2[x] where x =0,1,2
 			// gyro: raw.gyro_rad[x] where x =0,1,2
 
 			// TODO:
-			// - add _parameters to file
+			// - add _parameters to file : OK
 			// - replace now variable by timestamp: OK
+			// - have logging for undamped accel and gyro values
 
 			//METHOD: dampen all accelerometer and gyroscope inputs for a set time should the accelerometer register an acceleration above a set value.
+
+			// First publish undamped sensor data to custom topic
+			int instance;
+			orb_publish_auto(ORB_ID(sensor_combined_undamped), &_sensor_undamped_pub, &raw, &instance, ORB_PRIO_DEFAULT);
 
 			const hrt_abstime now = raw.timestamp;
 			// Detects the first accelerometer excitation in any directions, identifies the timestamp at which damping will stop
@@ -722,7 +735,6 @@ Sensors::run()
 				raw.gyro_rad[2] = (raw.gyro_rad[2]) * (_gyro_damping_factor / fabsf(raw.gyro_rad[2]) + _gyro_damping_noise_factor);
 			}
 
-			int instance;
 			orb_publish_auto(ORB_ID(sensor_combined), &_sensor_pub, &raw, &instance, ORB_PRIO_DEFAULT);
 
 			if (airdata.timestamp != airdata_prev_timestamp) {
@@ -776,6 +788,11 @@ Sensors::run()
 
 	if (_sensor_pub) {
 		orb_unadvertise(_sensor_pub);
+	}
+
+	//WECORP: close uOrb pub
+	if (_sensor_undamped_pub) {
+		orb_unadvertise(_sensor_undamped_pub);
 	}
 
 	if (_airdata_pub) {
