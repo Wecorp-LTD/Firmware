@@ -143,7 +143,7 @@ private:
 	uORB::Subscription	_diff_pres_sub{ORB_ID(differential_pressure)};			/**< raw differential pressure subscription */
 	uORB::Subscription	_parameter_update_sub{ORB_ID(parameter_update)};				/**< notification of parameter updates */
 	uORB::Subscription	_vcontrol_mode_sub{ORB_ID(vehicle_control_mode)};		/**< vehicle control mode subscription */
-        // WECORP, ET: commented because appear redefined up
+        // WECORP, ET: commented because appear redefined up in the new version
 	//int		_actuator_ctrl_0_sub{-1};		/**< attitude controls sub */
 	//int		_diff_pres_sub{-1};			/**< raw differential pressure subscription */
 	//int		_vcontrol_mode_sub{-1};		/**< vehicle control mode subscription */
@@ -151,9 +151,11 @@ private:
 
 	// WECORP: added sensor_undamped pub
 	orb_advert_t	_sensor_undamped_pub{nullptr};			/**< combined sensor data topic */
-	orb_advert_t	_sensor_pub{nullptr};			/**< combined sensor data topic */
-	orb_advert_t	_airdata_pub{nullptr};			/**< combined sensor data topic */
-	orb_advert_t	_magnetometer_pub{nullptr};			/**< combined sensor data topic */
+	//orb_advert_t	_sensor_pub{nullptr};			/**< combined sensor data topic */
+	//orb_advert_t	_airdata_pub{nullptr};			/**< combined sensor data topic */
+	//orb_advert_t	_magnetometer_pub{nullptr};			/**< combined sensor data topic */
+
+        // WECORP, ET: leaving sensor_undambed_pum defined as it is just for now, TD: change definition to follow the following ones
 
 	uORB::Publication<airspeed_s>			_airspeed_pub{ORB_ID(airspeed)};			/**< airspeed */
 	uORB::Publication<sensor_combined_s>		_sensor_pub{ORB_ID(sensor_combined)};			/**< combined sensor data topic */
@@ -530,9 +532,6 @@ Sensors::run()
 
 			_voted_sensors_update.setRelativeTimestamps(raw);
 
-                        //WECORP, ET: double check if orb_publish_auto function includes also this publish
-			//_sensor_pub.publish(raw);
-
 			//WECORP: artificially dampen the accelerometer and gyroscope when subjected to high vibration.
 
 			// here to modify the accel and gyro values (raw variable.)
@@ -548,7 +547,9 @@ Sensors::run()
 			//METHOD: dampen all accelerometer and gyroscope inputs for a set time should the accelerometer register an acceleration above a set value.
 
 			// First publish undamped sensor data to custom topic
+			// WECORP, ET: commented because it's not used anymore
 			int instance;
+			// WECORP, ET: commented because it's not working anymore
 			orb_publish_auto(ORB_ID(sensor_combined_undamped), &_sensor_undamped_pub, &raw, &instance, ORB_PRIO_DEFAULT);
 
 			const hrt_abstime now = raw.timestamp;
@@ -576,7 +577,9 @@ Sensors::run()
 				raw.gyro_rad[2] = (raw.gyro_rad[2]) * (_gyro_damping_factor / fabsf(raw.gyro_rad[2]) + _gyro_damping_noise_factor);
 			}
 
-			orb_publish_auto(ORB_ID(sensor_combined), &_sensor_pub, &raw, &instance, ORB_PRIO_DEFAULT);
+			//WECORP, ET: removed orb_publish_auto function and using new way of publishing
+			//orb_publish_auto(ORB_ID(sensor_combined), &_sensor_pub, &raw, &instance, ORB_PRIO_DEFAULT);
+			_sensor_pub.publish(raw);
 
 			if (airdata.timestamp != airdata_prev_timestamp) {
 				_airdata_pub.publish(airdata);
@@ -623,32 +626,31 @@ Sensors::run()
 		perf_end(_loop_perf);
 	}
 
-<<<<<<< b1fe9fa440f7e0ad75cba2f9e9e1c999647b5b0f
-=======
-	orb_unsubscribe(_diff_pres_sub);
-	orb_unsubscribe(_vcontrol_mode_sub);
-	orb_unsubscribe(_params_sub);
-	orb_unsubscribe(_actuator_ctrl_0_sub);
+	// WECORP, ET: commented as not done in 1.10.1
+	//orb_unsubscribe(_diff_pres_sub);
+	//orb_unsubscribe(_vcontrol_mode_sub);
+	//orb_unsubscribe(_params_sub);
+	//orb_unsubscribe(_actuator_ctrl_0_sub);
 
-	if (_sensor_pub) {
-		orb_unadvertise(_sensor_pub);
-	}
+	//if (_sensor_pub) {
+	//	orb_unadvertise(_sensor_pub);
+	//}
 
 	//WECORP: close uOrb pub
 	if (_sensor_undamped_pub) {
 		orb_unadvertise(_sensor_undamped_pub);
-	}
+        }
 
-	if (_airdata_pub) {
-		orb_unadvertise(_airdata_pub);
-	}
+	//if (_airdata_pub) {
+	//	orb_unadvertise(_airdata_pub);
+	//}
+        //
+	//if (_magnetometer_pub) {
+	//	orb_unadvertise(_magnetometer_pub);
+	//}
 
-	if (_magnetometer_pub) {
-		orb_unadvertise(_magnetometer_pub);
-	}
+	//_rc_update.deinit();
 
-	_rc_update.deinit();
->>>>>>> feat: fixed up the bitmask for logging. cleaned up comments
 	_voted_sensors_update.deinit();
 }
 
